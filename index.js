@@ -1,51 +1,57 @@
 var http = require("http");
+var url = require("url");
+var fs = require("fs");
 
-var nicePORT = 8080;
+var PORT = 8080;
 
 var handlerRequest = function (req, res){
   var url_parts = url.parse(req.url);
   switch (url_parts.pathname){
-    case "/index":
-      display_root(req, res);
+    case "/":
+      display_page("index.html", req, res);
+      break;
+    case "/home":
+      display_page("index.html", req, res);
       break;
     case "/food":
-      display_food(req, res);
+      display_page("food.html", req, res);
       break;
-    case "/movies":
-      display_movies(req, res);
+    case "/movie":
+      display_page("movies.html", req, res);
       break;
-    case "/css_":
-      display_css(req, res);
+    case "/css":
+      display_page("css.html", req, res);
       break;
     default:
-      display_404(req_res);
+      display_404(req, res);
       break;
-  }
+  };
 };
-
-var display_root = function(req, res){
-  res.writeHead(200, {"Content-Type": "text/html"});
-  res.end();
-}
-
-var display_food = function(req, res){
-  res.writeHead(200, {"Content-Type": "text/html"});
-  res.end();
-}
-
-var display_movies = function(req, res){
-  res.writeHead(200, {"Content-Type": "text/html"});
-  res.end();
-}
-
-var display_css = function(req, res){
-  res.writeHead(200, {"Content-Type": "text/html"});
-  res.end();
-}
 
 var server = http.createServer(handlerRequest);
 
-Server.listen(PORT, function(){
+server.listen(PORT, function(){
   console.log("Server is listening at http://localhost:%s", PORT)
 });
+
+
+var display_page = function(page, req, res) {
+  fs.readFile(page, function(err, data) {
+    if (err) {
+      return console.error(err);
+    }
+    res.writeHead(200, {
+      'Content-Type': 'text/html'
+    });
+    res.end(data);
+  });
+}
+
+var display_404 = function(req, res) {
+  res.writeHead(404, {'Content-Type': 'text/html'});
+  res.write("<h1>Not found</h1>");
+  res.end("This is not the page you are looking for");
+}
+
+
 
